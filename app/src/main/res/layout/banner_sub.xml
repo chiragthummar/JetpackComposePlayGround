@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_ads"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/banner_container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+<!--    <FrameLayout-->
+<!--        android:id="@+id/fl_shimemr"-->
+<!--        android:layout_width="fill_parent"-->
+<!--        android:layout_height="wrap_content">-->
+        <!--        <include layout="@layout/shimmer_placeholder" />-->
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_container_banner"
+            app:shimmer_auto_start="true"
+            app:shimmer_base_color="#ffcccccc"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="56.0dip"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="Loading Ad..."
+                    android:textAlignment="center" />
+            </RelativeLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+<!--    </FrameLayout>-->
+</RelativeLayout>
