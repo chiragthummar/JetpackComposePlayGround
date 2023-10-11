@@ -9,66 +9,32 @@ on:
         default: '1.0'
 jobs:
   build:
-    name: Build Signed APK
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      # 1
+      - name: Checkout code
+        uses: actions/checkout@v2
+      # 2
+      - name: Generate Release APK
+        run: ./gradlew assembleFossRelease
+      # 3
+      - name: Sign APK
+        uses: r0adkll/sign-android-release@v1
+        # ID used to access action output
+        id: sign_app
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: gradle
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      # Here we need to decode keystore.jks from base64 string and place it
-      # in the folder specified in the release signing configuration
-      - name: Decode Keystore
-        id: decode_keystore
-        uses: timheuer/base64-to-file@v1.2
+          releaseDirectory: app/build/outputs/apk/foss/release
+          signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      # 4
+      - uses: actions/upload-artifact@master
         with:
-          fileName: 'android_keystore.jks'
-          fileDir: '/home/runner/work/JetpackComposePlayGround/JetpackComposePlayGround/app/keystore/'
-          encodedString: ${{ secrets.ANDROID_SIGNING_KEY }}
-
-      - uses: actions/checkout@v3
-      # Build and sign APK ("-x test" argument is used to skip tests)
-      - name: Build APK
-        run: ./gradlew :app:assembleRelease -x test
-        env:
-          SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-
-      # Show information about the APK's signing certificates
-      - name: Verify Signature
-        run: $ANDROID_SDK_ROOT/build-tools/33.0.1/apksigner verify --print-certs /home/runner/work/JetpackComposePlayGround/JetpackComposePlayGround/app/release/JetpackDemo_${{ github.event.inputs.version }}.apk
-
-
-      # Save the APK after the Build job is complete to publish it as a Github release in the next job
-      - name: Upload APK
-        uses: actions/upload-artifact@v3.1.2
+          name: release.apk
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
+      # 5
+      - uses: actions/upload-artifact@master
         with:
-          name: JetpackDemo
-          path: /home/runner/work/JetpackComposePlayGround/JetpackComposePlayGround/app/release/JetpackDemo_${{ github.event.inputs.version }}.apk
-  release:
-    name: Release APK
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download APK from build
-        uses: actions/download-artifact@v1
-        with:
-          name: JetpackDemo
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.event.inputs.version }}
-          name: Release v${{ github.event.inputs.version }}
-          draft: false
-          prerelease: false
-          files: JetpackDemo/JetpackDemo_${{ github.event.inputs.version }}.apk
+          name: mapping.txt
+          path: app/build/outputs/mapping/release/mapping.txt
