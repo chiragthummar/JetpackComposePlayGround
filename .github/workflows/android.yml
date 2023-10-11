@@ -30,15 +30,15 @@ jobs:
         with:
           fileName: 'android_keystore.jks'
           fileDir: '/home/runner/work/JetpackComposePlayGround/JetpackComposePlayGround/app/keystore/'
-          encodedString: ${{ secrets.KEYSTORE }}
+          encodedString: ${{ secrets.ANDROID_SIGNING_KEY }}
 
       # Build and sign APK ("-x test" argument is used to skip tests)
       - name: Build APK
         run: ./gradlew :app:assembleRelease -x test
         env:
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
 
       # Show information about the APK's signing certificates
       - name: Verify Signature
