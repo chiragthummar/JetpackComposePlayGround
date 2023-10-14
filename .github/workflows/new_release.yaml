@@ -1,4 +1,4 @@
-name: Android CI
+name: Android CD
 
 on:
   workflow_dispatch:
@@ -21,16 +21,15 @@ jobs:
         - name: Generate Release APK
           run: ./gradlew assembleRelease
         - name: Sign APK
-          uses: ilharp/sign-android-release@v1
           # ID used to access action output
           id: sign_app
+          uses: r0adkll/sign-android-release@v1
           with:
-            releaseDir: app/build/outputs/apk/release
+            releaseDirectory: app/build/outputs/bundle/release
             signingKeyBase64: ${{ secrets.ANDROID_SIGNING_KEY }}
-            keykeyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
+            alias: ${{ secrets.ANDROID_KEY_ALIAS }}
             keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
             keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
-            buildToolsVersion: 33.0.0
         - uses: actions/upload-artifact@v3
           with:
             name: release.apk
