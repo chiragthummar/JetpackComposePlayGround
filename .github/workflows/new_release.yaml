@@ -38,8 +38,9 @@ jobs:
         with:
           name: apk
           path: ${{steps.sign_apk.outputs.signedReleaseFile}}
-        env:
-          FF: ${{steps.sign_apk.outputs.signedReleaseFile}}
+      - run: |
+          export FF=${{steps.sign_apk.outputs.signedReleaseFile}}
+
   release:
     name: Release App
     needs: build
@@ -55,8 +56,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: release_apk_15
-          release_name: release_2
+          tag_name: release_apk65656565
+          release_name: release_1255
       - name: Upload Release APK
         id: upload_release_asset
         uses: actions/upload-release-asset@v1.0.1
