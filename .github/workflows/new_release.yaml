@@ -1,4 +1,4 @@
-name: Android CI APK
+name: Android CI
 
 on:
   workflow_dispatch:
@@ -55,8 +55,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: release_apk_12
-          release_name: Compose_1.0.0
+          tag_name: release_apk
+          release_name: release_1.apk
       - name: Upload Release APK
         id: upload_release_asset
         uses: actions/upload-release-asset@v1.0.1
@@ -64,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: env.FF
+          asset_path: ${{ env.FF }}
           asset_name: ${{ github.event.repository.name }}.apk
           asset_content_type: application/zip
       - run: echo "Upload returned with status=${{ job.status }}."
